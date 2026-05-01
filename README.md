@@ -10,4 +10,4 @@ all of the hashing strategy in real world system, i will explain and implement i
 - [ ] 8. Hopscotch hashing
 - [ ] 9. Consistent hashing
 - [ ] 10. Bloom filter (da bezt)
-- [ ] 11. Count-Min sketch 
+- [ ] 11. Count-Min sketch
