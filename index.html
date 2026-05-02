@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ Hashing Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0f14;
+  --surface: #13161e;
+  --surface2: #1a1e28;
+  --surface3: #20253300;
+  --border: rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.15);
+  --text: #e8eaf0;
+  --muted: #6b7080;
+  --dim: #3d4155;
+  --green:  #4ade80; --green-bg:  rgba(74,222,128,0.08); --green-border:  rgba(74,222,128,0.2);
+  --teal:   #2dd4bf; --teal-bg:   rgba(45,212,191,0.08); --teal-border:   rgba(45,212,191,0.2);
+  --amber:  #fbbf24; --amber-bg:  rgba(251,191,36,0.08); --amber-border:  rgba(251,191,36,0.2);
+  --coral:  #f87171; --coral-bg:  rgba(248,113,113,0.08); --coral-border:  rgba(248,113,113,0.2);
+  --purple: #a78bfa; --purple-bg: rgba(167,139,250,0.08); --purple-border: rgba(167,139,250,0.2);
+  --blue:   #60a5fa; --blue-bg:   rgba(96,165,250,0.08);  --blue-border:   rgba(96,165,250,0.2);
+}
+
+body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; }
+
+.layout { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 340px;
+  flex-shrink: 0;
+  padding: 40px 24px 80px;
+  border-right: 0.5px solid var(--border);
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+
+h1 { font-size: 28px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 8px; }
+h1 span { color: var(--amber); }
+
+.header-sub { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+
+.copy-all-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--surface2); border: 0.5px solid var(--border-hover);
+  color: var(--muted); font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; padding: 7px 14px; border-radius: 6px; cursor: pointer;
+  transition: all 0.2s; margin-bottom: 28px;
+}
+.copy-all-btn:hover { color: var(--text); border-color: var(--dim); }
+.copy-all-btn.copied { color: var(--green); border-color: var(--green-border); }
+
+.group-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);
+  margin: 20px 0 10px; display: flex; align-items: center; gap: 8px;
+}
+.group-label::after { content: ''; flex: 1; height: 0.5px; background: var(--border); }
+
+.timeline { position: relative; }
+.timeline::before {
+  content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px;
+  width: 1px; background: linear-gradient(to bottom, transparent, var(--dim) 10%, var(--dim) 90%, transparent);
+}
+
+.stage-row { display: flex; gap: 14px; margin-bottom: 6px; cursor: pointer; }
+.stage-row:hover .card { border-color: var(--border-hover); }
+.stage-row.active .card { border-color: var(--amber-border); background: var(--surface2); }
+
+.dot-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; padding-top: 12px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid; background: var(--bg); flex-shrink: 0; transition: transform 0.2s; }
+.stage-row:hover .dot, .stage-row.active .dot { transform: scale(1.5); }
+.dot.green  { border-color: var(--green);  } .dot.teal   { border-color: var(--teal);   }
+.dot.amber  { border-color: var(--amber);  } .dot.coral  { border-color: var(--coral);  }
+.dot.purple { border-color: var(--purple); }
+
+.card {
+  flex: 1; background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; transition: border-color 0.2s, background 0.2s;
+}
+.card-top { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; flex-wrap: wrap; }
+.stage-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--dim); }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 2px 6px; border-radius: 20px; border: 0.5px solid; }
+.badge.green  { color: var(--green);  background: var(--green-bg);  border-color: var(--green-border);  }
+.badge.teal   { color: var(--teal);   background: var(--teal-bg);   border-color: var(--teal-border);   }
+.badge.amber  { color: var(--amber);  background: var(--amber-bg);  border-color: var(--amber-border);  }
+.badge.coral  { color: var(--coral);  background: var(--coral-bg);  border-color: var(--coral-border);  }
+.badge.purple { color: var(--purple); background: var(--purple-bg); border-color: var(--purple-border); }
+.card-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+/* ── DETAIL PANEL ── */
+.detail {
+  flex: 1; padding: 48px 48px 80px; overflow-y: auto;
+  max-width: 780px;
+}
+
+.detail-empty {
+  display: flex; align-items: center; justify-content: center;
+  height: 100%; min-height: 400px; flex-direction: column; gap: 12px;
+}
+.detail-empty-icon { font-size: 40px; opacity: 0.2; }
+.detail-empty-text { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--dim); }
+
+.detail-content { display: none; animation: fadeIn 0.25s ease; }
+.detail-content.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.detail-header { margin-bottom: 36px; border-bottom: 0.5px solid var(--border); padding-bottom: 24px; }
+.detail-stage-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.detail-title { font-size: clamp(24px, 4vw, 36px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+.detail-intro { font-size: 15px; color: var(--muted); line-height: 1.7; }
+
+.section { margin-bottom: 32px; }
+.section-title {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+}
+.section-title::after { content: ''; flex: 1; height: 0.5px; background: var(--border); }
+
+.section p { font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 12px; }
+.section p:last-child { margin-bottom: 0; }
+.section strong { color: var(--text); font-weight: 600; }
+.section code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--surface2); padding: 2px 6px; border-radius: 3px; color: var(--amber); }
+
+/* complexity table */
+.cx-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+.cx-table th { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; text-align: left; border-bottom: 0.5px solid var(--border); }
+.cx-table td { padding: 10px 12px; border-bottom: 0.5px solid var(--border); color: var(--muted); vertical-align: middle; font-size: 13px; }
+.cx-table tr:last-child td { border-bottom: none; }
+.cx-table td:first-child { color: var(--text); font-weight: 500; }
+.pill { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 20px; border: 0.5px solid; }
+.pill-g { background: rgba(74,222,128,0.1); color: #4ade80; border-color: rgba(74,222,128,0.3); }
+.pill-w { background: rgba(251,191,36,0.1); color: #fbbf24; border-color: rgba(251,191,36,0.3); }
+.pill-r { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.3); }
+
+/* company cards */
+.companies { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.company-card {
+  background: var(--surface2); border: 0.5px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+}
+.company-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.company-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* info boxes */
+.info-box {
+  background: var(--surface2); border: 0.5px solid var(--border);
+  border-left: 2px solid var(--amber); border-radius: 0 8px 8px 0;
+  padding: 14px 16px; margin: 16px 0;
+}
+.info-box.teal  { border-left-color: var(--teal); }
+.info-box.coral { border-left-color: var(--coral); }
+.info-box.purple{ border-left-color: var(--purple); }
+.info-box p { font-size: 13px; color: var(--muted); line-height: 1.65; margin: 0; }
+.info-box strong { color: var(--text); }
+
+/* tags */
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--dim); background: rgba(255,255,255,0.03); border: 0.5px solid var(--border); padding: 3px 8px; border-radius: 4px; }
+
+/* copy btn inside detail */
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 0.5px solid var(--border); color: var(--muted);
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 5px 10px;
+  border-radius: 5px; cursor: pointer; transition: all 0.15s; margin-top: 8px;
+}
+.copy-btn:hover { border-color: var(--dim); color: var(--text); }
+.copy-btn.copied { color: var(--green); border-color: var(--green-border); }
+
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 0.5px solid var(--border); }
+  .detail { padding: 32px 20px 60px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ══════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════ -->
+<aside class="sidebar">
+  <p class="eyebrow">C++ implementation guide</p>
+  <h1>Hashing <span>Roadmap</span></h1>
+  <p class="header-sub">11 strategies, easy to hard. Click any stage for deep info.</p>
+
+  <button class="copy-all-btn" onclick="copyAll(this)">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 009.5 2h-6A1.5 1.5 0 002 3.5v6A1.5 1.5 0 003.5 11H5"/></svg>
+    copy full roadmap
+  </button>
+
+  <p class="group-label">separate chaining</p>
+  <div class="timeline">
+    <div class="stage-row" onclick="showStage(1)" id="row-1">
+      <div class="dot-col"><div class="dot green"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">01</span><span class="card-title">Chaining — linked list</span><span class="badge green">beginner</span></div>
+        <div class="card-desc">Array of linked list nodes. The classic foundation.</div>
+      </div>
+    </div>
+    <div class="stage-row" onclick="showStage(2)" id="row-2">
+      <div class="dot-col"><div class="dot green"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">02</span><span class="card-title">Chaining — dynamic array</span><span class="badge green">beginner</span></div>
+        <div class="card-desc">Swap linked list for vector. Cache-friendly buckets.</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="group-label">open addressing</p>
+  <div class="timeline">
+    <div class="stage-row" onclick="showStage(3)" id="row-3">
+      <div class="dot-col"><div class="dot teal"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">03</span><span class="card-title">Linear probing</span><span class="badge teal">easy–medium</span></div>
+        <div class="card-desc">One flat array. Collision: try slot+1, +2…</div>
+      </div>
+    </div>
+    <div class="stage-row" onclick="showStage(4)" id="row-4">
+      <div class="dot-col"><div class="dot teal"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">04</span><span class="card-title">Quadratic probing</span><span class="badge teal">easy–medium</span></div>
+        <div class="card-desc">Try h+1², h+2²… Breaks primary clusters.</div>
+      </div>
+    </div>
+    <div class="stage-row" onclick="showStage(5)" id="row-5">
+      <div class="dot-col"><div class="dot teal"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">05</span><span class="card-title">Double hashing</span><span class="badge teal">easy–medium</span></div>
+        <div class="card-desc">h1(k) + i·h2(k). Most uniform probing.</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="group-label">advanced open addressing</p>
+  <div class="timeline">
+    <div class="stage-row" onclick="showStage(6)" id="row-6">
+      <div class="dot-col"><div class="dot amber"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">06</span><span class="card-title">Robin Hood hashing</span><span class="badge amber">medium</span></div>
+        <div class="card-desc">Steal from rich slots. Minimizes probe variance.</div>
+      </div>
+    </div>
+    <div class="stage-row" onclick="showStage(7)" id="row-7">
+      <div class="dot-col"><div class="dot amber"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">07</span><span class="card-title">Cuckoo hashing</span><span class="badge amber">medium</span></div>
+        <div class="card-desc">2 arrays, O(1) worst-case lookup guaranteed.</div>
+      </div>
+    </div>
+    <div class="stage-row" onclick="showStage(8)" id="row-8">
+      <div class="dot-col"><div class="dot amber"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">08</span><span class="card-title">Hopscotch hashing</span><span class="badge amber">medium–hard</span></div>
+        <div class="card-desc">Neighborhood bitmap. Concurrent-friendly design.</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="group-label">distributed + probabilistic</p>
+  <div class="timeline">
+    <div class="stage-row" onclick="showStage(9)" id="row-9">
+      <div class="dot-col"><div class="dot coral"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">09</span><span class="card-title">Consistent hashing</span><span class="badge coral">hard</span></div>
+        <div class="card-desc">Hash ring for distributed systems.</div>
+      </div>
+    </div>
+    <div class="stage-row" onclick="showStage(10)" id="row-10">
+      <div class="dot-col"><div class="dot purple"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">10</span><span class="card-title">Bloom filter</span><span class="badge purple">hard</span></div>
+        <div class="card-desc">Bit array + k hash functions. Zero false negatives.</div>
+      </div>
+    </div>
+    <div class="stage-row" onclick="showStage(11)" id="row-11">
+      <div class="dot-col"><div class="dot purple"></div></div>
+      <div class="card">
+        <div class="card-top"><span class="stage-num">11</span><span class="card-title">Count-Min sketch</span><span class="badge purple">hard</span></div>
+        <div class="card-desc">Frequency estimation over streaming data.</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════
+     DETAIL PANEL
+══════════════════════════════════════ -->
+<main class="detail" id="detail-panel">
+
+  <div class="detail-empty" id="empty-state">
+    <div class="detail-empty-icon">←</div>
+    <div class="detail-empty-text">click a stage to explore</div>
+  </div>
+
+  <!-- STAGE 1 -->
+  <div class="detail-content" id="detail-1">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 01 · Separate chaining · Beginner</div>
+      <div class="detail-title">Chaining with <span style="color:var(--green)">linked lists</span></div>
+      <div class="detail-intro">The original hash table. An array of N slots where each slot holds a pointer to a linked list of nodes. When two keys hash to the same slot, they coexist in the same chain. Simple, flexible, and the mental model every other strategy builds on.</div>
+      <button class="copy-btn" onclick="copyStage(this,1)">copy summary</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Hash tables were invented around <strong>1953</strong> independently by Hans Peter Luhn at IBM and Gene Amdahl. The linked list variant became dominant because dynamic memory allocation made it natural — each chain can grow indefinitely without preallocating space.</p>
+      <p>The core idea is simple: turn a key into a number using a hash function, use that number as an array index, and store the value there. When two keys produce the same index (a collision), just append to the chain at that slot.</p>
+      <p>Unix's original <code>ndbm</code> database (late 1970s) used separate chaining. It became the mental model for a generation of systems programmers and is still the first hash table taught in every CS curriculum worldwide.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">how collision handling works</div>
+      <p>When <code>insert("alice", 1)</code> and <code>insert("bob", 1)</code> both hash to slot 3, the slot holds a chain: <code>alice → bob → nullptr</code>. Lookup walks the chain comparing keys until it finds a match or hits <code>nullptr</code>.</p>
+      <div class="info-box">
+        <p><strong>Key insight:</strong> the chain can grow as long as needed. You never run out of space the way open addressing does. This is the main advantage over stages 3–5.</p>
+      </div>
+      <p>Deletion is clean — just pointer surgery. Find the node, update the previous node's <code>next</code> pointer to skip it, then <code>delete</code>. No tombstones, no side effects. This is why some production systems prefer chaining even when open addressing is faster on average.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">load factor</div>
+      <p>Load factor = <code>n items / k slots</code>. This equals the average chain length. At load factor 0.75, you walk ~1.5 nodes per lookup on average. At 2.0, you walk ~2.5 nodes. The standard threshold is <strong>0.75</strong> — this number is literally hardcoded in Java's HashMap source.</p>
+      <div class="info-box teal">
+        <p><strong>Why 0.75 specifically?</strong> It comes from a mathematical tradeoff — at 0.75, expected comparisons per lookup is ~1.5 while memory waste is acceptable. At 1.0 it jumps to ~2.5. The number 0.75 is not arbitrary.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>average</th><th>worst case</th><th>why worst happens</th></tr></thead>
+        <tbody>
+          <tr><td>insert</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>all keys hash to same bucket</td></tr>
+          <tr><td>lookup</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>walking one very long chain</td></tr>
+          <tr><td>delete</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>find then unlink = walk + pointer fix</td></tr>
+          <tr><td>resize</td><td><span class="pill pill-w">O(n)</span></td><td><span class="pill pill-w">O(n)</span></td><td>every element reinserted into new array</td></tr>
+          <tr><td>space</td><td><span class="pill pill-w">O(n+k)</span></td><td><span class="pill pill-w">O(n+k)</span></td><td>n nodes + k empty slot pointers</td></tr>
+        </tbody>
+      </table>
+      <p>The worst case is not just theoretical. In <strong>2011</strong>, a HashDoS attack exploited predictable hash functions to craft keys that all land in the same bucket, turning O(1) lookups into O(n) and crashing PHP, Python, and Ruby servers. The fix: randomize the hash seed per-process, which Python, Ruby, and Java now do by default.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Java HashMap</div>
+          <div class="company-desc">Uses linked list chaining. Since Java 8, converts chains longer than 8 nodes to red-black trees → O(log n) worst case instead of O(n).</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">C++ std::unordered_map</div>
+          <div class="company-desc">Standard library hash map uses separate chaining. Known for poor cache performance due to pointer chasing — why alternatives like absl::flat_hash_map exist.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Redis (internally)</div>
+          <div class="company-desc">Uses a custom chained hash table (dict.c) with two tables for incremental rehashing — avoids the latency spike of rehashing all at once.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">CPython dict (old)</div>
+          <div class="company-desc">Early Python dict used chaining before switching to open addressing in Python 3.6 for memory and cache efficiency.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box coral">
+        <p><strong>Prepend, don't append.</strong> Most implementations prepend new nodes to the head of the chain instead of appending to the tail. This avoids walking to the end every time and is O(1). The order of nodes in a bucket doesn't matter for correctness.</p>
+      </div>
+      <div class="info-box teal">
+        <p><strong>Redis uses two tables at once.</strong> When Redis resizes, it keeps both the old and new table active simultaneously, moving a few buckets per operation. This spreads the O(n) rehash cost across many requests instead of one giant pause — critical for a low-latency server.</p>
+      </div>
+      <div class="info-box purple">
+        <p><strong>Java 8's tree conversion is controversial.</strong> Converting buckets to red-black trees adds complexity and only helps in adversarial (HashDoS) scenarios. Under normal loads with a good hash function, the linked list never gets long enough to matter.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">separate chaining</span><span class="tag">linked list</span><span class="tag">load factor 0.75</span><span class="tag">HashDoS</span><span class="tag">rehashing</span><span class="tag">pointer chasing</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 2 -->
+  <div class="detail-content" id="detail-2">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 02 · Separate chaining · Beginner</div>
+      <div class="detail-title">Chaining with <span style="color:var(--green)">dynamic arrays</span></div>
+      <div class="detail-intro">Same strategy as stage 1 — but instead of a linked list per bucket, use a <code>std::vector</code>. The hash table logic is identical. The difference is purely in memory layout, and that difference has a measurable impact on real-world performance.</div>
+      <button class="copy-btn" onclick="copyStage(this,2)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Linked lists have one fundamental problem: every node is a separate heap allocation at a random memory address. To walk a chain of 5 nodes, your CPU makes 5 round trips to different memory locations. Each trip that isn't in cache costs ~100 CPU cycles. This is called a <strong>cache miss</strong>.</p>
+      <p>Dynamic arrays (vectors) store all elements contiguously in memory. When you access the first element, the CPU automatically loads the surrounding memory into cache. Accessing the second element is then nearly free — it's already in cache. This is called <strong>spatial locality</strong>.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">how collision handling works</div>
+      <p>When two keys land in the same bucket, they're stored as consecutive entries in the same <code>std::vector</code>. Lookup iterates through the vector's elements linearly — but since they're contiguous in memory, this linear scan is extremely fast in practice.</p>
+      <div class="info-box">
+        <p><strong>Trade-off:</strong> deletion in a vector requires shifting elements or swapping with the last element. Linked list deletion is cleaner (pointer surgery). If your workload is deletion-heavy, linked list chaining may be preferable.</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">load factor</div>
+      <p>Same rule as stage 1 — keep load factor below <strong>0.75</strong>. The difference is that at the same load factor, dynamic array chaining is faster because the CPU can prefetch the entire bucket into cache in one operation.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>average</th><th>worst case</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>insert</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>amortized — vector may resize</td></tr>
+          <tr><td>lookup</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>faster than LL in practice due to cache</td></tr>
+          <tr><td>delete</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>swap-with-last trick keeps it O(1) avg</td></tr>
+          <tr><td>space</td><td><span class="pill pill-w">O(n+k)</span></td><td><span class="pill pill-w">O(n+k)</span></td><td>vectors have capacity overhead</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Google's dense_hash_map</div>
+          <div class="company-desc">Google's internal hash map (later open-sourced as part of sparsehash) used contiguous storage to maximize cache efficiency.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Game engines</div>
+          <div class="company-desc">Unreal Engine and Unity use vector-bucket hash maps in performance-critical paths where cache misses from pointer chasing are unacceptable.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Embedded systems</div>
+          <div class="company-desc">Systems without dynamic allocation use static arrays per bucket — same concept, no heap. Fixed memory footprint is required.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box teal">
+        <p><strong>The swap-with-last trick.</strong> To delete from a vector without shifting all elements, swap the target element with the last element, then pop the last. O(1) deletion — but it changes the order of elements in the bucket. For a hash map this is fine since order doesn't matter.</p>
+      </div>
+      <div class="info-box coral">
+        <p><strong>Vector overhead.</strong> Each <code>std::vector</code> is 24 bytes (pointer + size + capacity) even when empty. With 1 million buckets, that's 24MB of overhead just for empty buckets. For sparse tables, this is worse than linked lists which use 8 bytes (one null pointer) per empty slot.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">cache locality</span><span class="tag">spatial locality</span><span class="tag">vector bucket</span><span class="tag">swap-with-last</span><span class="tag">prefetch</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 3 -->
+  <div class="detail-content" id="detail-3">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 03 · Open addressing · Easy–Medium</div>
+      <div class="detail-title">Linear <span style="color:var(--teal)">probing</span></div>
+      <div class="detail-intro">No pointers. No separate chains. One flat array holds everything. When a slot is occupied, try the next one. Then the next. This simplicity makes it the most cache-friendly hash table design — and the one used inside Python's dict.</div>
+      <button class="copy-btn" onclick="copyStage(this,3)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Open addressing was developed in the 1950s alongside separate chaining. The key insight: if the hash table array itself is the only memory you use, cache performance is dramatically better. No pointer chasing, no heap allocations per element — just sequential memory access.</p>
+      <p>Linear probing is the simplest open addressing scheme: when slot <code>h(k)</code> is full, try <code>h(k)+1</code>, <code>h(k)+2</code>, etc., wrapping around. The probe sequence is just incrementing the index.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">collision handling &amp; the clustering problem</div>
+      <p>When two keys land at the same slot, the second one probes forward until it finds an empty slot. This works — but creates <strong>primary clustering</strong>: once a run of filled slots forms, every new collision that lands anywhere in that run makes the run longer. Clusters grow superlinearly.</p>
+      <div class="info-box coral">
+        <p><strong>Tombstone deletion.</strong> You cannot simply empty a slot when deleting — it would break the probe chain for elements that probed past it. Instead, mark the slot as "deleted" (tombstone). On lookup, keep probing through tombstones. On insert, reuse tombstone slots. Without tombstones, deletion corrupts the table.</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">load factor</div>
+      <p>Keep load factor below <strong>0.7</strong> — stricter than chaining. At 0.9 load factor, average probes per lookup explodes to ~5.5. At 1.0 the table is full and insert loops forever. Tombstones also count toward load factor and must be tracked.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>average</th><th>worst case</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>insert</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>clustering causes long probe sequences</td></tr>
+          <tr><td>lookup</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>must probe through entire cluster</td></tr>
+          <tr><td>delete</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>tombstone required — can't just empty slot</td></tr>
+          <tr><td>space</td><td><span class="pill pill-g">O(n)</span></td><td><span class="pill pill-g">O(n)</span></td><td>no per-element pointer overhead</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Python dict</div>
+          <div class="company-desc">CPython's dict uses open addressing with a custom probe sequence (not pure linear). Python 3.6+ made dicts ordered by insertion as a side effect of the implementation.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">PHP arrays</div>
+          <div class="company-desc">PHP's array type (which is an ordered hash map) uses open addressing internally, making it one of the most-used hash table implementations in the world.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">V8 (JavaScript)</div>
+          <div class="company-desc">Google's JS engine uses open addressing for object property lookup — critical path for all JavaScript execution.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box">
+        <p><strong>Linear probing beats quadratic probing in practice.</strong> Despite causing more clustering, linear probing's sequential memory access pattern is so cache-friendly that it often outperforms quadratic probing on real hardware, even with more collisions.</p>
+      </div>
+      <div class="info-box teal">
+        <p><strong>Tombstone accumulation.</strong> A table with many deletions fills up with tombstones that slow down both lookup (must probe through them) and insert (must scan past them). Periodic rehashing clears tombstones — this is why some implementations rehash even when the element count hasn't grown.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">open addressing</span><span class="tag">primary clustering</span><span class="tag">tombstone</span><span class="tag">flat array</span><span class="tag">load factor 0.7</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 4 -->
+  <div class="detail-content" id="detail-4">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 04 · Open addressing · Easy–Medium</div>
+      <div class="detail-title">Quadratic <span style="color:var(--teal)">probing</span></div>
+      <div class="detail-intro">Same flat array as linear probing, but the probe sequence jumps by increasing squares: h(k), h(k)+1, h(k)+4, h(k)+9… This breaks up the primary clusters that plague linear probing — at the cost of different problems.</div>
+      <button class="copy-btn" onclick="copyStage(this,4)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Quadratic probing was developed as a direct fix for linear probing's clustering problem. By jumping further with each probe, elements that collide don't pile up in the same region. Two keys that hash to the same slot will still share the first probe position, but diverge quickly after that.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">collision handling &amp; secondary clustering</div>
+      <p>Primary clustering is solved — but quadratic probing introduces <strong>secondary clustering</strong>: any two keys that hash to the same initial slot follow the exact same probe sequence. They don't pile up as badly, but they still interfere with each other.</p>
+      <div class="info-box coral">
+        <p><strong>Critical constraint: table size must be prime.</strong> With a non-prime table size, the quadratic probe sequence may not visit all slots — you can fail to insert even when the table has empty slots. With a prime table size, the sequence is guaranteed to cover at least half the table.</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>average</th><th>worst case</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>insert</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>secondary clustering, not primary</td></tr>
+          <tr><td>lookup</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>worse cache behavior than linear</td></tr>
+          <tr><td>delete</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>still needs tombstones</td></tr>
+          <tr><td>space</td><td><span class="pill pill-g">O(n)</span></td><td><span class="pill pill-g">O(n)</span></td><td>same flat array, no pointers</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Java Hashtable (old)</div>
+          <div class="company-desc">Early Java Hashtable implementations used quadratic probing before the ecosystem settled on chaining for HashMap.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Academic / teaching</div>
+          <div class="company-desc">Quadratic probing is more commonly found in textbooks and teaching implementations than production code — it's the intermediate step between linear and double hashing.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box">
+        <p><strong>Quadratic probing is largely obsolete in practice.</strong> Double hashing (stage 5) solves secondary clustering too, with better distribution. Robin Hood hashing (stage 6) solves clustering differently and is strictly superior. Very few modern production systems use quadratic probing — it exists mainly as a teaching concept.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">quadratic probing</span><span class="tag">secondary clustering</span><span class="tag">prime table size</span><span class="tag">probe sequence</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 5 -->
+  <div class="detail-content" id="detail-5">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 05 · Open addressing · Easy–Medium</div>
+      <div class="detail-title">Double <span style="color:var(--teal)">hashing</span></div>
+      <div class="detail-intro">Use two hash functions. When a collision occurs, the step size between probes is itself determined by a second hash of the key: <code>h1(k) + i·h2(k)</code>. Two keys that collide at h1 now follow completely different probe sequences. Both clustering problems are solved.</div>
+      <button class="copy-btn" onclick="copyStage(this,5)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Double hashing is the most theoretically sound open addressing scheme. The probe sequence is unique per key — two keys that hash to the same slot with h1 will almost certainly have different h2 values, so they diverge immediately. This gives distribution close to random probing.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">collision handling</div>
+      <p>Probe sequence: <code>slot = (h1(k) + i * h2(k)) % size</code>. The key constraint: <strong>h2 must never return 0</strong> (would cause infinite loop at the same slot), and <strong>gcd(h2(k), size) must equal 1</strong> to guarantee the probe sequence visits all slots. The easiest way to ensure this: make table size prime and use <code>h2(k) = prime - (k % prime)</code> where prime is smaller than the table size.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>average</th><th>worst case</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>insert</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>2 hash computations per probe</td></tr>
+          <tr><td>lookup</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>uniform distribution, few probes needed</td></tr>
+          <tr><td>delete</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>still needs tombstones</td></tr>
+          <tr><td>space</td><td><span class="pill pill-g">O(n)</span></td><td><span class="pill pill-g">O(n)</span></td><td>flat array, no pointers</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Python set (old)</div>
+          <div class="company-desc">CPython's set type historically used a double-hashing-like probe sequence to avoid clustering.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Cryptographic applications</div>
+          <div class="company-desc">Double hashing appears in digital signatures and proof-of-work systems (Bitcoin uses SHA256(SHA256(x))) — different context but same name.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box teal">
+        <p><strong>Double hashing is theoretically optimal among probing schemes</strong> — but Robin Hood hashing (stage 6) beats it in practice by reducing variance, not the average. The average probe count in double hashing and Robin Hood is similar; Robin Hood's maximum probe count is much lower.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">double hashing</span><span class="tag">two hash functions</span><span class="tag">uniform distribution</span><span class="tag">gcd constraint</span><span class="tag">prime size</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 6 -->
+  <div class="detail-content" id="detail-6">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 06 · Advanced open addressing · Medium</div>
+      <div class="detail-title">Robin Hood <span style="color:var(--amber)">hashing</span></div>
+      <div class="detail-intro">Linear probing with one extra rule: when inserting, if the current element has probed further from its ideal slot than the incoming element, they swap. Rich elements yield to poor ones. This equalizes probe distances and gives dramatically better worst-case performance.</div>
+      <button class="copy-btn" onclick="copyStage(this,6)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Invented by Pedro Celis in his 1986 PhD thesis at the University of Waterloo. The name comes from the idea of "stealing from the rich to give to the poor" — elements that are close to their ideal position yield their slot to elements that have traveled far.</p>
+      <p>The key metric is <strong>DIB (Distance from Initial Bucket)</strong> — how many probes an element is away from its ideal slot. During insert, if the incoming element's DIB > current element's DIB, swap them and continue inserting the displaced element.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">collision handling &amp; deletion</div>
+      <p>Insert works like linear probing but with swapping. The genius is in deletion: <strong>no tombstones needed</strong>. Instead, use backward shift deletion — when you delete an element, shift subsequent elements backward to fill the gap, stopping when you hit an empty slot or an element at its ideal position.</p>
+      <div class="info-box">
+        <p><strong>Why no tombstones?</strong> The Robin Hood invariant guarantees that elements are densely packed near their ideal position. Shifting backward restores this invariant without leaving ghost slots that accumulate over time.</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>average</th><th>worst case</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>insert</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>amortized — variance is minimized</td></tr>
+          <tr><td>lookup</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-w">O(log n)</span></td><td>can early-exit when DIB exceeded</td></tr>
+          <tr><td>delete</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-r">O(n)</span></td><td>backward shift — no tombstones</td></tr>
+          <tr><td>space</td><td><span class="pill pill-g">O(n)</span></td><td><span class="pill pill-g">O(n)</span></td><td>+1 integer per slot for DIB</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Rust HashMap (old)</div>
+          <div class="company-desc">Rust's standard HashMap used Robin Hood hashing until 2019, when it switched to SwissTable (hashbrown). Still one of the most famous Robin Hood implementations.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Abseil / SwissTable</div>
+          <div class="company-desc">Google's absl::flat_hash_map (used across Google's codebase) is inspired by Robin Hood principles combined with SIMD slot scanning.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Nginx</div>
+          <div class="company-desc">Nginx's internal hash tables use open addressing with Robin Hood-like properties for its configuration and routing tables.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">ankerl::unordered_dense</div>
+          <div class="company-desc">A modern C++ Robin Hood hash map that consistently benchmarks faster than std::unordered_map and many alternatives.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box teal">
+        <p><strong>Early exit on lookup.</strong> During lookup, if the element you're examining has a lower DIB than the element you're searching for, the element you're searching for cannot exist — if it did, it would have displaced this element during insertion. You can stop probing early. This makes negative lookups faster.</p>
+      </div>
+      <div class="info-box coral">
+        <p><strong>Why Rust switched away.</strong> Robin Hood hashing has high insertion variance — some insertions are very fast, others are slow due to cascading swaps. SwissTable (SIMD-based) gives more predictable latency, which matters for Rust's use cases.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">Robin Hood</span><span class="tag">DIB</span><span class="tag">backward shift</span><span class="tag">no tombstones</span><span class="tag">variance minimization</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 7 -->
+  <div class="detail-content" id="detail-7">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 07 · Advanced open addressing · Medium</div>
+      <div class="detail-title">Cuckoo <span style="color:var(--amber)">hashing</span></div>
+      <div class="detail-intro">Two hash tables, two hash functions. Every key has exactly two candidate positions. Lookup always checks exactly two slots — O(1) worst case, not just average. When both positions are occupied, evict one element and rehome it, like a cuckoo bird pushing eggs out of a nest.</div>
+      <button class="copy-btn" onclick="copyStage(this,7)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Invented by Rasmus Pagh and Flemming Friche Rodler in 2001. Named after the cuckoo bird which lays its eggs in other birds' nests, pushing the existing eggs out. The key guarantee no other hash table can match: <strong>lookup is always exactly 2 memory accesses</strong>, no matter how full the table is.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">collision handling &amp; cycle detection</div>
+      <p>On insert, check both positions. If either is empty, done. If both are occupied, evict one and try to rehome it in its alternate position. This can cascade. The danger: cycles. If the eviction chain loops back to a slot already visited, the insert has failed — trigger a rehash with new hash functions.</p>
+      <div class="info-box coral">
+        <p><strong>Cycle detection is mandatory.</strong> Without it, a failed insert loops forever. Track the number of evictions — if it exceeds a threshold (typically 2×table size), declare failure and rehash. This is the hardest part to implement correctly.</p>
+      </div>
+      <div class="info-box">
+        <p><strong>Real-world extension — cuckoo with a stash.</strong> Keep a small stash (typically 8 slots) for elements that fail to insert. This dramatically reduces the rehash rate while maintaining O(1) lookup (check table1, table2, then stash linearly).</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>average</th><th>worst case</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>insert</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-w">O(n)</span></td><td>amortized — rehash is rare</td></tr>
+          <tr><td>lookup</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-g">O(1)</span></td><td>exactly 2 memory accesses always</td></tr>
+          <tr><td>delete</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-g">O(1)</span></td><td>check 2 slots, remove — trivial</td></tr>
+          <tr><td>space</td><td><span class="pill pill-w">O(n)</span></td><td><span class="pill pill-w">O(n)</span></td><td>2 tables — typically 50% load per table</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">TikTok — Monolith</div>
+          <div class="company-desc">ByteDance's Monolith recommendation system paper (2022) uses a variant of cuckoo hashing for their real-time feature store. O(1) lookup is critical for serving recommendations at millisecond latency.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Network hardware</div>
+          <div class="company-desc">FPGA and ASIC network routers use cuckoo hashing for packet routing tables — O(1) worst-case lookup is a hard requirement at line speed (40Gbps+).</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Linux kernel</div>
+          <div class="company-desc">The rhashtable (resizable hash table) in the Linux kernel uses cuckoo-inspired techniques for guaranteed O(1) lookup in networking subsystems.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Voltdb / MemC3</div>
+          <div class="company-desc">MemC3 (optimized Memcached) uses cuckoo hashing with concurrent access support. Demonstrated 3× throughput improvement over standard Memcached.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box teal">
+        <p><strong>Maximum load factor is ~50% per table.</strong> With two tables each at 50%, total space utilization is 50%. Compare to linear probing at 70%. Cuckoo hashing trades space efficiency for the O(1) worst-case lookup guarantee.</p>
+      </div>
+      <div class="info-box purple">
+        <p><strong>Cuckoo filters.</strong> A variant of Bloom filters built on cuckoo hashing — they support deletion (Bloom filters don't) and are more space-efficient. Used in networking for packet deduplication and flow tracking.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">cuckoo hashing</span><span class="tag">two tables</span><span class="tag">O(1) worst lookup</span><span class="tag">cycle detection</span><span class="tag">eviction</span><span class="tag">stash</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 8 -->
+  <div class="detail-content" id="detail-8">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 08 · Advanced open addressing · Medium–Hard</div>
+      <div class="detail-title">Hopscotch <span style="color:var(--amber)">hashing</span></div>
+      <div class="detail-intro">Each key must live within H slots of its ideal position — the neighborhood. A bitmap per slot tracks which nearby slots belong to its neighborhood. When the neighborhood fills up, swap elements around to restore the invariant. Designed for concurrent access.</div>
+      <button class="copy-btn" onclick="copyStage(this,8)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Invented by Maurice Herlihy, Nir Shavit, and Moran Tzafrir in 2008. The goal was a hash table that works well with concurrent threads without requiring global locks. By bounding where an element can live (within H slots), any thread can check the entire neighborhood with at most H memory accesses — and H is typically 32 or 64, fitting in a CPU cache line.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">collision handling</div>
+      <p>Each slot has a <strong>hop bitmap</strong> of H bits. Bit i being set means the slot i positions ahead contains an element that belongs in this neighborhood. On insert, find an empty slot using linear probing, then swap it backward into the neighborhood using the bitmap to track moves.</p>
+      <div class="info-box">
+        <p><strong>H is usually 32 or 64</strong> — matching cache line size. All H positions of a neighborhood fit in one cache line, so checking an entire neighborhood is one cache access. This is the key performance insight.</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>average</th><th>worst case</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>insert</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-w">O(H)</span></td><td>bounded by neighborhood size</td></tr>
+          <tr><td>lookup</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-w">O(H)</span></td><td>at most H slots checked</td></tr>
+          <tr><td>delete</td><td><span class="pill pill-g">O(1)</span></td><td><span class="pill pill-w">O(H)</span></td><td>update bitmap + remove element</td></tr>
+          <tr><td>space</td><td><span class="pill pill-g">O(n)</span></td><td><span class="pill pill-g">O(n)</span></td><td>+H bits per slot for bitmap</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Intel TBB</div>
+          <div class="company-desc">Intel's Threading Building Blocks library includes a concurrent_hash_map based on hopscotch hashing — used in parallel computing workloads across Intel's software ecosystem.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">High-frequency trading</div>
+          <div class="company-desc">HFT firms use hopscotch-inspired tables for order book lookups — bounded worst case and cache-line alignment are critical for microsecond latency.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box teal">
+        <p><strong>Hopscotch is the most concurrent-friendly hash table.</strong> Because each neighborhood fits in a cache line, threads can lock individual neighborhoods instead of the whole table. Multiple threads can insert and lookup simultaneously as long as they're in different neighborhoods.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">hopscotch</span><span class="tag">neighborhood</span><span class="tag">hop bitmap</span><span class="tag">concurrent</span><span class="tag">cache line</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 9 -->
+  <div class="detail-content" id="detail-9">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 09 · Distributed systems · Hard</div>
+      <div class="detail-title">Consistent <span style="color:var(--coral)">hashing</span></div>
+      <div class="detail-intro">Not a hash table for storing data — a routing algorithm for distributing data across machines. Keys and nodes both map onto a ring. A key belongs to the first node clockwise from it. Adding or removing a node remaps only 1/n of all keys instead of everything.</div>
+      <button class="copy-btn" onclick="copyStage(this,9)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Invented by David Karger et al. at MIT in 1997. Before consistent hashing, distributed caches used <code>node = hash(key) % num_nodes</code>. When a node is added or removed, num_nodes changes, so almost every key remaps to a different node — catastrophic cache invalidation. Consistent hashing reduces remapping to just <code>1/n</code> of keys.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">how the ring works</div>
+      <p>Hash both keys and node names onto a circle (0 to 2³²). Each key is assigned to the first node clockwise from it. Add a node: only the keys between the new node and the previous node remapped. Remove a node: only its keys move to the next node clockwise.</p>
+      <div class="info-box">
+        <p><strong>Virtual nodes solve uneven distribution.</strong> With 3 physical nodes, the ring has 3 points and distribution is uneven. Map each physical node to 150 virtual nodes on the ring — distribution becomes uniform. This is how Cassandra and DynamoDB handle it.</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>complexity</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>find node for key</td><td><span class="pill pill-w">O(log n)</span></td><td>binary search on sorted ring (std::map)</td></tr>
+          <tr><td>add node</td><td><span class="pill pill-w">O(log n)</span></td><td>insert into sorted ring</td></tr>
+          <tr><td>remove node</td><td><span class="pill pill-w">O(log n)</span></td><td>erase from sorted ring</td></tr>
+          <tr><td>keys remapped on change</td><td><span class="pill pill-g">O(k/n)</span></td><td>only 1/n of total keys move</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Amazon DynamoDB</div>
+          <div class="company-desc">The original DynamoDB paper (Dynamo, 2007) described consistent hashing as the core data distribution mechanism. Influenced an entire generation of distributed databases.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Apache Cassandra</div>
+          <div class="company-desc">Cassandra uses consistent hashing with virtual nodes (vnodes) for data distribution across its ring topology. The partition key is hashed to determine which node owns the data.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Discord</div>
+          <div class="company-desc">Discord uses consistent hashing to route WebSocket connections — when a server is added or removed, only a fraction of users reconnect instead of everyone.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Akamai CDN</div>
+          <div class="company-desc">Consistent hashing was originally developed for web caching at Akamai. It determines which edge server caches which content, minimizing cache misses when servers are added.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box teal">
+        <p><strong>Implement with std::map.</strong> The ring is just a sorted map from hash value to node name. <code>std::map::lower_bound(hash(key))</code> finds the first node clockwise in O(log n). If it returns end(), wrap around to begin(). That's the entire routing algorithm.</p>
+      </div>
+      <div class="info-box purple">
+        <p><strong>Rendezvous hashing is an alternative.</strong> Instead of a ring, hash(key + node_name) for every node, pick the node with highest hash. Adding/removing a node still remaps only 1/n of keys, with no ring data structure needed. Simpler but O(n) lookup instead of O(log n).</p>
+      </div>
+      <div class="tags">
+        <span class="tag">consistent hashing</span><span class="tag">hash ring</span><span class="tag">virtual nodes</span><span class="tag">distributed systems</span><span class="tag">minimal remapping</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 10 -->
+  <div class="detail-content" id="detail-10">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 10 · Probabilistic · Hard</div>
+      <div class="detail-title">Bloom <span style="color:var(--purple)">filter</span></div>
+      <div class="detail-intro">Not a hash map at all — a probabilistic membership data structure. Uses a bit array and k hash functions to answer "is this element in the set?" with zero false negatives and tunable false positives. Dramatically more space-efficient than a hash set.</div>
+      <button class="copy-btn" onclick="copyStage(this,10)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Invented by Burton Howard Bloom in 1970. The insight: you don't always need to know exactly what's in a set — sometimes you just need to know if something is definitely not in it. A Bloom filter can tell you "definitely not in set" or "probably in set" using a fraction of the memory a hash set would require.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">how it works</div>
+      <p>A bit array of m bits, all initialized to 0. k independent hash functions. To insert: hash the element with all k functions, set those k bits to 1. To query: hash with all k functions, check those k bits — if any is 0, definitely not in set. If all are 1, probably in set (could be false positive).</p>
+      <div class="info-box coral">
+        <p><strong>No deletion.</strong> You can't unset a bit — other elements may have set it. Counting Bloom filters use counters instead of bits to support deletion, at higher memory cost.</p>
+      </div>
+      <div class="info-box">
+        <p><strong>Optimal k formula:</strong> <code>k = (m/n) × ln2</code> where m = bit array size, n = expected elements. This minimizes false positive rate for given memory.</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>complexity</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>insert</td><td><span class="pill pill-g">O(k)</span></td><td>k hash computations + k bit sets</td></tr>
+          <tr><td>query</td><td><span class="pill pill-g">O(k)</span></td><td>k hash computations + k bit checks</td></tr>
+          <tr><td>space</td><td><span class="pill pill-g">O(m)</span></td><td>m bits regardless of n elements</td></tr>
+          <tr><td>false positive rate</td><td colspan="2"><span class="pill pill-w">(1 - e^(-kn/m))^k</span> — tunable by choosing m</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Google Bigtable / LevelDB</div>
+          <div class="company-desc">Uses Bloom filters per SSTable to avoid disk reads for keys that don't exist. Without it, every negative lookup requires reading from disk. With it, 99%+ of negative lookups are answered from memory.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Cassandra</div>
+          <div class="company-desc">Every SSTable has a Bloom filter. Before reading from disk, check the filter — if it says "definitely not here", skip the disk read entirely. Reduces disk I/O by orders of magnitude.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Chrome browser</div>
+          <div class="company-desc">Uses a Bloom filter for Safe Browsing — checks if a URL is in the malicious URL list locally before querying Google's servers. Protects privacy and reduces latency.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Bitcoin</div>
+          <div class="company-desc">SPV (light) nodes use Bloom filters to tell full nodes which transactions they care about, without revealing their exact addresses. BIP 37.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box teal">
+        <p><strong>1% false positive rate costs only ~10 bits per element.</strong> A hash set storing a 64-bit key uses 64 bits per element. A Bloom filter achieving 1% false positives uses ~10 bits per element — 6× more space-efficient. At 0.1% false positives it's still only ~15 bits.</p>
+      </div>
+      <div class="info-box purple">
+        <p><strong>Cuckoo filters are often better.</strong> Cuckoo filters (2014) achieve similar false positive rates with less space, support deletion, and have better cache performance. Bloom filters are older and more widely known, but cuckoo filters are technically superior for most use cases.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">Bloom filter</span><span class="tag">probabilistic</span><span class="tag">bit array</span><span class="tag">false positive</span><span class="tag">k hash functions</span><span class="tag">no deletion</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 11 -->
+  <div class="detail-content" id="detail-11">
+    <div class="detail-header">
+      <div class="detail-stage-num">Stage 11 · Probabilistic · Hard</div>
+      <div class="detail-title">Count-Min <span style="color:var(--purple)">sketch</span></div>
+      <div class="detail-intro">A probabilistic frequency counter. Uses a d×w matrix of counters and d hash functions to estimate how many times any element has appeared in a stream. Never undercounts. May overcount, but the error is bounded by ε with probability 1−δ.</div>
+      <button class="copy-btn" onclick="copyStage(this,11)">copy summary</button>
+    </div>
+    <div class="section">
+      <div class="section-title">introduction</div>
+      <p>Invented by Graham Cormode and S. Muthukrishnan in 2003. The problem it solves: you have a stream of billions of events and want to know the frequency of any element — but you can't store every element. A hash map would run out of memory. A Count-Min sketch answers frequency queries in O(1) using constant memory, with a provable error bound.</p>
+    </div>
+    <div class="section">
+      <div class="section-title">how it works</div>
+      <p>d arrays, each of width w. d independent hash functions, one per array. On update(x, count): for each of d arrays, increment position h_i(x) by count. On query(x): return the minimum across all d arrays at position h_i(x).</p>
+      <div class="info-box">
+        <p><strong>Why minimum?</strong> Collisions only ever add to a counter (never subtract), so every counter is an overestimate. The minimum across d independent arrays gives the tightest overestimate — the array least affected by collisions.</p>
+      </div>
+      <div class="info-box teal">
+        <p><strong>Choose d and w from ε and δ:</strong> <code>w = ceil(e/ε)</code>, <code>d = ceil(ln(1/δ))</code>. For 1% error (ε=0.01) with 99% confidence (δ=0.01): w=272, d=5. That's 1360 counters total — tiny for frequency estimation over billions of events.</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">time &amp; space complexity</div>
+      <table class="cx-table">
+        <thead><tr><th>operation</th><th>complexity</th><th>note</th></tr></thead>
+        <tbody>
+          <tr><td>update</td><td><span class="pill pill-g">O(d)</span></td><td>d hash computations + d increments</td></tr>
+          <tr><td>query</td><td><span class="pill pill-g">O(d)</span></td><td>d hash computations + d reads + min</td></tr>
+          <tr><td>space</td><td><span class="pill pill-g">O(d×w)</span></td><td>independent of stream size n</td></tr>
+          <tr><td>error guarantee</td><td colspan="2">estimate ≤ true + ε×N with prob 1−δ (N = total count)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">who uses it &amp; where</div>
+      <div class="companies">
+        <div class="company-card">
+          <div class="company-name">Twitter / X</div>
+          <div class="company-desc">Uses Count-Min sketch to track trending topics in real-time. Counting exact frequencies of billions of tweets per day would be impossible — the sketch approximates it in constant memory.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Apache Flink / Spark</div>
+          <div class="company-desc">Both streaming frameworks include Count-Min sketch as a built-in operator for approximate frequency queries over infinite streams.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Cloudflare</div>
+          <div class="company-desc">Uses Count-Min sketch for DDoS detection — tracking request frequencies per IP at line rate without storing every IP address.</div>
+        </div>
+        <div class="company-card">
+          <div class="company-name">Redis (4.0+)</div>
+          <div class="company-desc">Redis's top-k data structure uses Count-Min sketch internally to track the most frequent elements in a stream without storing all elements.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">things most people don't know</div>
+      <div class="info-box coral">
+        <p><strong>Count-Min sketch never undercounts.</strong> Because collisions only add to counters, the estimate is always ≥ true frequency. This one-sided error is useful — you can safely use it as a conservative lower bound. Bloom filters have a similar one-sided property (no false negatives).</p>
+      </div>
+      <div class="info-box purple">
+        <p><strong>Heavy hitters algorithm.</strong> Combine Count-Min sketch with a small heap to find the top-k most frequent elements. Query the sketch for each candidate in the heap — O(k log k + d) to find top-k over a billion-element stream. This is how Twitter finds trending topics.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">Count-Min sketch</span><span class="tag">frequency estimation</span><span class="tag">streaming</span><span class="tag">error bounds</span><span class="tag">d×w matrix</span><span class="tag">heavy hitters</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+var stageData = [
+  null,
+  { title: "Stage 1 - Chaining (linked list) [beginner]", desc: "Array of forward_list nodes. The classic. Implement with insert, search, delete, resize.", tags: ["hash function","load factor","resize/rehash","separate chaining"], companies: ["Java HashMap","C++ std::unordered_map","Redis","CPython dict"] },
+  { title: "Stage 2 - Chaining (dynamic array) [beginner]", desc: "Swap linked list for std::vector per bucket. Same logic, better cache behavior.", tags: ["cache locality","vector bucket","amortized cost"], companies: ["Google dense_hash_map","Game engines","Embedded systems"] },
+  { title: "Stage 3 - Linear probing [easy-medium]", desc: "One flat array. Collision: try slot+1, +2... Tombstones for deletion. Load factor < 0.7.", tags: ["open addressing","tombstone","primary clustering","flat array"], companies: ["Python dict","PHP arrays","V8 JavaScript"] },
+  { title: "Stage 4 - Quadratic probing [easy-medium]", desc: "Try h+1^2, h+2^2... Breaks primary clusters. Table size must be prime.", tags: ["secondary clustering","prime table size","probe sequence"], companies: ["Old Java Hashtable","Academic/teaching"] },
+  { title: "Stage 5 - Double hashing [easy-medium]", desc: "Probe: h1(k) + i*h2(k). Most uniform open-addressing. h2 != 0, gcd(h2,size)=1.", tags: ["two hash functions","uniform distribution","gcd constraint"], companies: ["Python set (old)","Cryptographic systems"] },
+  { title: "Stage 6 - Robin Hood hashing [medium]", desc: "Steal from rich slots. Track DIB per entry. Backward shift delete — no tombstones.", tags: ["DIB","backward shift","variance minimization"], companies: ["Rust HashMap (old)","Abseil/SwissTable","Nginx","ankerl::unordered_dense"] },
+  { title: "Stage 7 - Cuckoo hashing [medium]", desc: "Two arrays, two hash functions. O(1) worst-case lookup. Cycle detection required.", tags: ["two tables","cycle detection","O(1) worst lookup","eviction"], companies: ["TikTok Monolith","Network routers","Linux kernel","MemC3"] },
+  { title: "Stage 8 - Hopscotch hashing [medium-hard]", desc: "Every key within H slots of ideal. Hop bitmap per slot. Cache-line sized neighborhood.", tags: ["neighborhood bitmap","hop bitmap","concurrent","cache line"], companies: ["Intel TBB","HFT systems"] },
+  { title: "Stage 9 - Consistent hashing [hard]", desc: "Keys and nodes on a ring (0-2^32). Virtual nodes for even distribution. 1/n remapping.", tags: ["hash ring","virtual nodes","minimal remapping","distributed"], companies: ["Amazon DynamoDB","Cassandra","Discord","Akamai CDN"] },
+  { title: "Stage 10 - Bloom filter [hard]", desc: "Bit array + k hash functions. Zero false negatives. k=(m/n)*ln2 optimal.", tags: ["bit array","k hash functions","false positive rate","no deletion"], companies: ["Google LevelDB","Cassandra","Chrome","Bitcoin"] },
+  { title: "Stage 11 - Count-Min sketch [hard]", desc: "d x w counters. Update increments d cells. Query = minimum across d arrays.", tags: ["frequency estimation","error bounds","streaming","heavy hitters"], companies: ["Twitter/X","Apache Flink","Cloudflare","Redis"] }
+];
+
+function showStage(n) {
+  document.querySelectorAll('.stage-row').forEach(function(r) { r.classList.remove('active'); });
+  document.querySelectorAll('.detail-content').forEach(function(d) { d.classList.remove('active'); });
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('row-' + n).classList.add('active');
+  var el = document.getElementById('detail-' + n);
+  el.classList.add('active');
+  if (window.innerWidth <= 768) {
+    document.getElementById('detail-panel').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function formatStage(s) {
+  return s.title + "\n" + s.desc + "\nConcepts: " + s.tags.join(", ") + "\nUsed by: " + s.companies.join(", ");
+}
+
+function doCopy(text) {
+  var ta = document.createElement("textarea");
+  ta.value = text; ta.setAttribute("readonly","");
+  ta.style.position = "absolute"; ta.style.left = "-9999px"; ta.style.top = "0";
+  document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, 99999);
+  try { document.execCommand("copy"); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+function copyStage(btn, n) {
+  var original = btn.innerHTML;
+  doCopy(formatStage(stageData[n]));
+  btn.classList.add('copied'); btn.textContent = 'copied!';
+  setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = original; }, 2000);
+}
+
+function copyAll(btn) {
+  var lines = ["C++ HASHING ROADMAP - 11 stages\n" + "=".repeat(40)];
+  for (var i = 1; i < stageData.length; i++) lines.push(formatStage(stageData[i]));
+  var original = btn.innerHTML;
+  doCopy(lines.join("\n\n---\n\n"));
+  btn.classList.add('copied'); btn.textContent = 'copied all 11 stages!';
+  setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = original; }, 2500);
+}
+</script>
+</body>
+</html>
