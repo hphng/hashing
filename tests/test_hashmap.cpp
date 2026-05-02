@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../stage1_chaining_ll/hash_map.h"
+#include "../stage2_chaining_dynamic_array/hash_map.h"
 #include <string>
 
 // helper function
