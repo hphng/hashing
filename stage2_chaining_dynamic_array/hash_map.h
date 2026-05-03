@@ -9,7 +9,7 @@ class HashMap {
     size_t count;
     float max_load = 0.75f;
 
-    size_t bucketIndex(const K& key) const {
+    size_t bucket_index(const K& key) const {
         size_t size = bucket.size();
         size_t hash_value =  std::hash<K>{}(key) % size;
         
@@ -32,7 +32,7 @@ public:
             resize();
         }
 
-        size_t index = bucketIndex(key);
+        size_t index = bucket_index(key);
 
         //check exist
         for(auto& [cur_key, cur_value]: bucket[index]) {
@@ -47,7 +47,7 @@ public:
     }
 
     V* get(const K& key) {
-        size_t index = bucketIndex(key);
+        size_t index = bucket_index(key);
         for(auto& [cur_key, cur_value]: bucket[index]){
             if(key == cur_key){
                 return &cur_value;
@@ -58,7 +58,7 @@ public:
     }
 
     bool remove(const K& key) {
-        size_t index = bucketIndex(key);
+        size_t index = bucket_index(key);
 
         for(size_t i = 0; i < bucket[index].size(); i++) {
             if(key == bucket[index][i].first){

@@ -17,7 +17,7 @@ class HashMap {
     size_t count;
     float max_load = 0.75f; //count/slot
 
-    size_t bucketIndex(const K& key) const {
+    size_t bucket_index(const K& key) const {
         size_t size = bucket.size();
         size_t hash_value = std::hash<K>{}(key) % size;
 
@@ -44,7 +44,7 @@ public:
         if((float)(count + 1) / bucket.size() > max_load){
             resize();
         }
-        size_t index = bucketIndex(key);
+        size_t index = bucket_index(key);
         Node* cur = bucket[index];
         
         while(cur) {
@@ -56,14 +56,14 @@ public:
             cur = cur -> next;
         }
 
-        Node* newNode = new Node(key, value);
-        newNode -> next = bucket[index];
-        bucket[index] = newNode;
+        Node* new_node = new Node(key, value);
+        new_node -> next = bucket[index];
+        bucket[index] = new_node;
         count++;
     }
 
     V* get(const K& key) {
-        size_t index = bucketIndex(key);
+        size_t index = bucket_index(key);
         Node* cur = bucket[index];
 
         if(!cur) {
@@ -81,7 +81,7 @@ public:
     }
 
     bool remove(const K& key) {
-        size_t index = bucketIndex(key);
+        size_t index = bucket_index(key);
         Node* cur = bucket[index];
 
         if(!cur){
@@ -118,21 +118,21 @@ public:
 
 private:
     void resize() {
-        std::vector<Node*> newBucket(bucket.size() * 2, nullptr);
+        std::vector<Node*> new_bucket(bucket.size() * 2, nullptr);
 
         for(Node* head: bucket){
             Node* cur = head;
             while(cur){
                 Node* next = cur -> next;
 
-                size_t newIndex = std::hash<K>{}(cur -> key) % newBucket.size();
-                cur -> next = newBucket[newIndex];
-                newBucket[newIndex] = cur;
+                size_t new_index = std::hash<K>{}(cur -> key) % new_bucket.size();
+                cur -> next = new_bucket[new_index];
+                new_bucket[new_index] = cur;
 
                 cur = next;
             }
         }
 
-        bucket = std::move(newBucket);
+        bucket = std::move(new_bucket);
     }
 };
