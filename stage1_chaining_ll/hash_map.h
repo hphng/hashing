@@ -17,9 +17,9 @@ class HashMap {
     size_t count;
     float max_load = 0.75f; //count/slot
 
-    size_t bucketIndex(const K& key){
+    size_t bucketIndex(const K& key) const {
         size_t size = bucket.size();
-        int hash_value = std::hash<K>{}(key) % size;
+        size_t hash_value = std::hash<K>{}(key) % size;
 
         return hash_value;
     }
@@ -46,14 +46,6 @@ public:
         }
         size_t index = bucketIndex(key);
         Node* cur = bucket[index];
-        
-        //slot have no value
-        if(!cur){
-            Node* newNode = new Node(key, value);
-            bucket[index] = newNode;
-            count++;
-            return;
-        }
         
         while(cur) {
             //overwrite the same key
@@ -120,7 +112,7 @@ public:
         return false;
     }
 
-    size_t size(){
+    size_t size() const {
         return count;
     }
 

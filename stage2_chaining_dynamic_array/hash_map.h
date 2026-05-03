@@ -9,7 +9,7 @@ class HashMap {
     size_t count;
     float max_load = 0.75f;
 
-    size_t bucketIndex(const K& key){
+    size_t bucketIndex(const K& key) const {
         size_t size = bucket.size();
         size_t hash_value =  std::hash<K>{}(key) % size;
         
@@ -23,7 +23,7 @@ public:
 
     ~HashMap() {}
 
-    size_t size(){
+    size_t size() const {
         return count;
     }
 
