@@ -1,8 +1,8 @@
 all of the hashing strategy in real world system, i will explain and implement it by myself
 
-- [ ] 1. Chaining - linked list
-- [ ] 2. Chanining - dynamic array
-- [ ] 3. Linear probing
+- [x] 1. Chaining - linked list
+- [x] 2. Chanining - dynamic array
+- [x] 3. Linear probing
 - [ ] 4. Quadratic probing
 - [ ] 5. Double hashing
 - [ ] 6. Robin hood hashing
