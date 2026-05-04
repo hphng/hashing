@@ -1,3 +1,8 @@
+/*
+Note: we need our bucket size to be prime
+-> run the find_primes_script.cpp first, then run/read this
+*/
+
 #pragma once
 #include<vector>
 #include<functional>
