@@ -7,7 +7,7 @@ Note: we need our bucket size to be prime
 #include<vector>
 #include<functional>
 #include<stddef.h>
-#include "primes.h"
+#include "../utility/primes/primes.h"
 #include<iostream>
 #include<algorithm>
 

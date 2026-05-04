@@ -1,8 +1,8 @@
 /* 
     run this script with the command below so that it can create primes.h inside the local folder:
 
-    g++ -g stage4_quadratic_probing/find_primes_script.cpp -o find_primes_script.exe
-    ./find_primes_script.exe stage4_quadratic_probing/primes.h
+    g++ -g utility/primes//find_primes_script.cpp -o find_primes_script.exe
+    ./find_primes_script.exe utility/primes/primes.h
 */
 
 #include<iostream>
@@ -37,7 +37,7 @@ std::vector<int> sieve_of_eratosthenes(size_t max_size = std::round(1e6)) {
 int main(int argc, char* argv[]) {
     std::vector<int> primes = sieve_of_eratosthenes();
 
-    std::string path = argc > 1 ? argv[1] : "stage4_quadratic_probing/primes.h";
+    std::string path = argc > 1 ? argv[1] : "utility/primes";
     std::ofstream file(path);
     file << "#pragma once\n";
     file << "#include <cstddef>\n"; 
