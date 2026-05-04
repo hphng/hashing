@@ -19,8 +19,14 @@ This is a C++ learning project implementing hash table collision resolution stra
 **Completed stages:**
 - Stage 1: Chaining with linked list (`stage1_chaining_ll/hash_map.h`)
 - Stage 2: Chaining with dynamic array (`stage2_chaining_dynamic_array/hash_map.h`)
+- Stage 3: Linear probing (`stage3_linear_probing/hash_map.h`)
+- Stage 4: Quadratic probing (`stage4_quadratic_probing/hash_map.h`)
 
-**Planned stages** (see `README.md`): linear probing, quadratic probing, double hashing, Robin Hood hashing, cuckoo hashing, hopscotch hashing, consistent hashing, Bloom filter, Count-Min sketch.
+**Planned stages** (see `README.md`): double hashing, Robin Hood hashing, cuckoo hashing, hopscotch hashing, consistent hashing, Bloom filter, Count-Min sketch.
+
+## Known TODOs
+
+- **Stage 4**: Add a limit test for when bucket size exceeds the largest prime in `primes.h` (~999,983). Requires ~500k inserts — too slow for a unit test, needs a dedicated stress test. Also consider fixing `resize()` to fall back to doubling instead of silently doing nothing when no prime is available.
 
 ## Build & Run
 
