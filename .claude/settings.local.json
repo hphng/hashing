@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(g++ -fdiagnostics-color=always -g tests/test_stage7.cpp -o tests/test_stage7.exe)",
+      "Bash(g++ -fdiagnostics-color=always -g tests/test_stage7.cpp -o tests/test_stage7_debug.exe)",
+      "Bash(timeout 5 ./tests/test_stage7_debug.exe)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(./tests/test_stage7.exe)",
+      "PowerShell(Stop-Process *)",
+      "Bash(g++ -fdiagnostics-color=always -g tests/test_stage7.cpp -o tests/test_stage7b.exe)",
+      "Bash(./tests/test_stage7b.exe)",
+      "Bash(g++ -fdiagnostics-color=always -g tests/test_stage7.cpp -o tests/test_stage7c.exe)",
+      "Bash(./tests/test_stage7c.exe)"
+    ]
+  }
+}
