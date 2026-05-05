@@ -78,6 +78,6 @@ int main() {
     overwrite_existing_key();
     size_after_remove_and_reinsert();
     remove_nonexistent_key();
-    // stress_evictions();
+    stress_evictions();
     return 0;
 }

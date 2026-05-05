@@ -27,11 +27,19 @@ class HashMap {
     float max_load;
 
     size_t hash1(const K& key) const {
-        return ((std::hash<K>{}(key) + seed1) * 2654435761ULL) % bucket1.size();
+        size_t h = std::hash<K>{}(key) ^ seed1;
+        h ^= h >> 17;
+        h *= 2654435761ULL;
+        h ^= h >> 13;
+        return h % bucket1.size();
     }
 
     size_t hash2(const K& key) const {
-        return ((std::hash<K>{}(key) + seed2) * 2246822519ULL) % bucket2.size();
+        size_t h = std::hash<K>{}(key) ^ seed2;
+        h ^= h >> 13;
+        h *= 2246822519ULL;
+        h ^= h >> 17;
+        return h % bucket2.size();
     }
 
 public:
@@ -45,33 +53,29 @@ public:
     }
 
     void insert(const K& key, const V& value) {
-        if((float) count/(bucket1.size() + bucket2.size()) > max_load) {
-            resize();
-        }
-
-        size_t eviction_count = 0;
+        // overwrite check before load check — avoids resize for updates
         size_t index1 = hash1(key);
-        size_t index2 = hash2(key);
-
-        //overwrite existing key
         if(bucket1[index1].state == State::HAS_VALUE && bucket1[index1].key == key) {
             bucket1[index1].value = value;
             return;
         }
 
+        size_t index2 = hash2(key);
         if(bucket2[index2].state == State::HAS_VALUE && bucket2[index2].key == key) {
             bucket2[index2].value = value;
             return;
         }
 
-        //check key in 2 buckets, evict
+        if((float) count / (bucket1.size() + bucket2.size()) > max_load) {
+            resize();
+        }
+
         K current_key = key;
         V current_value = value;
         while(true) {
-            eviction_count = 0;
-            while(eviction_count < MAX_EVICTIONS) {
-                auto& bucket = (eviction_count % 2 == 0) ? bucket1 : bucket2;
-                size_t index = (eviction_count % 2 == 0) ? hash1(current_key) : hash2(current_key);
+            for(size_t ev = 0; ev < MAX_EVICTIONS; ev++) {
+                auto& bucket = (ev % 2 == 0) ? bucket1 : bucket2;
+                size_t index = (ev % 2 == 0) ? hash1(current_key) : hash2(current_key);
 
                 if(bucket[index].state == State::EMPTY) {
                     bucket[index] = Node(current_key, current_value);
@@ -79,13 +83,12 @@ public:
                     return;
                 }
 
-                Node tmp = Node(current_key, current_value);
-                current_key = bucket[index].key;
-                current_value = bucket[index].value;
-                bucket[index] = tmp;
-
-                eviction_count++;
+                // swap instead of creating a tmp Node — avoids copies for complex K/V
+                std::swap(current_key, bucket[index].key);
+                std::swap(current_value, bucket[index].value);
             }
+            // eviction cycle detected — current_key is floating (not in any bucket)
+            // rehash rebuilds the table with new seeds; outer loop retries the float
             rehash();
         }
     }
@@ -94,11 +97,11 @@ public:
         size_t index1 = hash1(key);
         size_t index2 = hash2(key);
 
-        if(bucket1[index1].key == key && bucket1[index1].state == State::HAS_VALUE) {
+        if(bucket1[index1].state == State::HAS_VALUE && bucket1[index1].key == key) {
             return &bucket1[index1].value;
         }
 
-        if(bucket2[index2].key == key && bucket2[index2].state == State::HAS_VALUE) {
+        if(bucket2[index2].state == State::HAS_VALUE && bucket2[index2].key == key) {
             return &bucket2[index2].value;
         }
 
@@ -109,13 +112,13 @@ public:
         size_t index1 = hash1(key);
         size_t index2 = hash2(key);
 
-        if(bucket1[index1].key == key && bucket1[index1].state == State::HAS_VALUE) {
+        if(bucket1[index1].state == State::HAS_VALUE && bucket1[index1].key == key) {
             bucket1[index1] = Node();
             count--;
             return true;
         }
 
-        if(bucket2[index2].key == key && bucket2[index2].state == State::HAS_VALUE) {
+        if(bucket2[index2].state == State::HAS_VALUE && bucket2[index2].key == key) {
             bucket2[index2] = Node();
             count--;
             return true;
@@ -126,8 +129,9 @@ public:
 
 private:
     void resize() {
-        std::vector<Node> old_bucket1 = bucket1;
-        std::vector<Node> old_bucket2 = bucket2;
+        // move instead of copy — avoids allocating a duplicate of the old table
+        std::vector<Node> old_bucket1 = std::move(bucket1);
+        std::vector<Node> old_bucket2 = std::move(bucket2);
 
         bucket1.assign(old_bucket1.size() * 2, Node());
         bucket2.assign(old_bucket2.size() * 2, Node());
@@ -155,19 +159,23 @@ private:
 
         for(size_t i = 0; i < MAX_EVICTIONS; i++) {
             auto& b = (i % 2 == 0) ? b1 : b2;
-            size_t index = (i % 2 == 0)
-                ? ((std::hash<K>{}(current_key) + s1) * 2654435761ULL) % cap
-                : ((std::hash<K>{}(current_key) + s2) * 2246822519ULL) % cap;
+            size_t h = std::hash<K>{}(current_key);
+            size_t index;
+            if(i % 2 == 0) {
+                h ^= s1; h ^= h >> 17; h *= 2654435761ULL; h ^= h >> 13;
+                index = h % cap;
+            } else {
+                h ^= s2; h ^= h >> 13; h *= 2246822519ULL; h ^= h >> 17;
+                index = h % cap;
+            }
 
             if(b[index].state == State::EMPTY) {
                 b[index] = Node(current_key, current_value);
                 return true;
             }
 
-            Node tmp = Node(current_key, current_value);
-            current_key = b[index].key;
-            current_value = b[index].value;
-            b[index] = tmp;
+            std::swap(current_key, b[index].key);
+            std::swap(current_value, b[index].value);
         }
         return false;
     }
@@ -175,12 +183,10 @@ private:
     void rehash() {
         size_t cap = bucket1.size();
 
-        // collect all current keys
         std::vector<Node> all_nodes;
         for(auto& n : bucket1) if(n.state == State::HAS_VALUE) all_nodes.push_back(n);
         for(auto& n : bucket2) if(n.state == State::HAS_VALUE) all_nodes.push_back(n);
 
-        // try new seeds until all keys fit without cycles
         while(true) {
             seed1 += 2;
             seed2 += 2;
