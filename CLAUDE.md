@@ -41,33 +41,33 @@ Each stage directory contains:
 Compile with g++ (MSYS2 ucrt64):
 
 ```bash
-# Build and run tests
-g++ -fdiagnostics-color=always -g tests/test_hashmap.cpp -o tests/test_hashmap.exe && ./tests/test_hashmap.exe
+# Build and run a stage's tests
+g++ -fdiagnostics-color=always -g tests/test_stage8.cpp -o tests/test_stage8.exe && ./tests/test_stage8.exe
 
-# Build a specific stage file directly
-g++ -fdiagnostics-color=always -g stage2_chaining_dynamic_array/hash_map.h -o /dev/null
+# Build a specific stage file to check for compile errors
+g++ -fdiagnostics-color=always -g stage8_hopscotch_hashing/hash_map.h -o /dev/null
 ```
 
 The `.vscode/tasks.json` default build task compiles the currently active file with the same flags.
 
 ## Architecture
 
-Both stage implementations expose an identical public interface:
+All stage implementations expose an identical public interface:
 
 ```cpp
 HashMap<K, V> map(num_buckets);
-map.insert(key, value);   // insert or overwrite; triggers resize when load > 0.75
+map.insert(key, value);   // insert or overwrite; triggers resize when load > threshold
 map.get(key);             // returns V* (nullptr if missing)
 map.remove(key);          // returns bool
 map.size();               // number of stored entries
 ```
 
-**Stage 1** uses `std::vector<Node*>` with a hand-rolled linked list and manual `new`/`delete`.
-
-**Stage 2** uses `std::vector<std::vector<std::pair<K, V>>>` (nested vectors). Removal uses swap-with-last-and-pop. No manual memory management.
-
-Both use `std::hash<K>` to compute bucket indices and resize (double bucket count + rehash) when load factor exceeds 0.75.
+Each stage uses `std::hash<K>` for hashing and resizes by doubling + rehashing when the load factor threshold is exceeded.
 
 ## Tests
 
-`tests/test_hashmap.cpp` contains the shared test suite. The `#include` at the top controls which stage is under test — update it when switching stages. Tests use a simple `expect(bool, message)` helper and print PASS/FAIL to stdout.
+Each stage has its own test file: `tests/test_stage1.cpp` through `tests/test_stage8.cpp`.
+
+All stages share `tests/tests_common.h` which contains `run_common_tests()` — a baseline suite covering insert/get, overwrite, missing key, remove, resize, size tracking, and insert-remove-reinsert.
+
+Each stage test file includes the common tests plus stage-specific tests that exercise the unique properties of that collision strategy.
