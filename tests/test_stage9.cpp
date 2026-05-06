@@ -1,4 +1,5 @@
 #include "../stage9_consistent_hashing/hash_ring.h"
+#include "../stage9_consistent_hashing/hash_ring.cpp"
 #include <iostream>
 #include <string>
 #include <unordered_map>
