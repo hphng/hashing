@@ -29,8 +29,10 @@ This is a C++ learning project implementing hash table collision resolution stra
 - Stage 10: Bloom filter (`stage10_bloom_filter/`) — `BloomFilter` class, probabilistic set membership
 
 Each stage directory contains:
-- `hash_map.h` — the implementation
+- `hash_map.h` (or `hash_ring.h` / `bloom_filter.h` for stages 9–10) — the implementation
 - `introduction.md` — deep dive: concept explanation, real-world usage, history, and tradeoffs vs previous stages
+
+Stages 9 and 10 also have a `.cpp` file alongside the header. Their test files `#include` the `.cpp` directly (single-translation-unit build), so no separate compilation step is needed.
 
 **Planned stages** (see `README.md`): Count-Min sketch.
 
@@ -43,14 +45,14 @@ Each stage directory contains:
 Compile with g++ (MSYS2 ucrt64):
 
 ```bash
-# Build and run a stage's tests
-g++ -fdiagnostics-color=always -g tests/test_stage8.cpp -o tests/test_stage8.exe && ./tests/test_stage8.exe
+# Build and run a stage's tests (replace N with the stage number)
+g++ -fdiagnostics-color=always -g -std=c++20 tests/test_stageN.cpp -o tests/test_stageN.exe && ./tests/test_stageN.exe
 
 # Build a specific stage file to check for compile errors
-g++ -fdiagnostics-color=always -g stage8_hopscotch_hashing/hash_map.h -o /dev/null
+g++ -fdiagnostics-color=always -g -std=c++20 stageN_*/hash_map.h -o /dev/null
 ```
 
-The `.vscode/tasks.json` default build task compiles the currently active file with the same flags.
+The `.vscode/tasks.json` default build task compiles the currently active file with the same flags (`-std=c++20`).
 
 ## Architecture
 
@@ -68,7 +70,7 @@ Each stage uses `std::hash<K>` for hashing and resizes by doubling + rehashing w
 
 ## Tests
 
-Each stage has its own test file: `tests/test_stage1.cpp` through `tests/test_stage8.cpp`.
+Each stage has its own test file: `tests/test_stage1.cpp` through `tests/test_stage10.cpp`.
 
 All stages share `tests/tests_common.h` which contains `run_common_tests()` — a baseline suite covering insert/get, overwrite, missing key, remove, resize, size tracking, and insert-remove-reinsert.
 

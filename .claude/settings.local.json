@@ -16,7 +16,12 @@
       "Bash(g++ -fdiagnostics-color=always -g -std=c++20 tests/test_stage9.cpp -o tests/test_stage9.exe)",
       "Bash(./tests/test_stage9.exe)",
       "Bash(g++ -fdiagnostics-color=always -g -std=c++20 tests/test_stage10.cpp -o tests/test_stage10.exe)",
-      "Bash(./tests/test_stage10.exe)"
+      "Bash(./tests/test_stage10.exe)",
+      "Bash(Get-ChildItem -Path \"D:\\\\huy\\\\Side Project\\\\hashing\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)",
+      "Bash(g++ -fdiagnostics-color=always -g -std=c++20 tests/test_stage11.cpp -o tests/test_stage11.exe)",
+      "Bash(./tests/test_stage11.exe)"
     ]
   }
 }
