@@ -26,12 +26,13 @@ This is a C++ learning project implementing hash table collision resolution stra
 - Stage 7: Cuckoo hashing (`stage7_cuckoo_hashing/`)
 - Stage 8: Hopscotch hashing (`stage8_hopscotch_hashing/`)
 - Stage 9: Consistent hashing (`stage9_consistent_hashing/`) — `HashRing` class, not `HashMap`
+- Stage 10: Bloom filter (`stage10_bloom_filter/`) — `BloomFilter` class, probabilistic set membership
 
 Each stage directory contains:
 - `hash_map.h` — the implementation
 - `introduction.md` — deep dive: concept explanation, real-world usage, history, and tradeoffs vs previous stages
 
-**Planned stages** (see `README.md`): Bloom filter, Count-Min sketch.
+**Planned stages** (see `README.md`): Count-Min sketch.
 
 ## Known TODOs
 
