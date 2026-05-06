@@ -10,7 +10,9 @@
       "Bash(g++ -fdiagnostics-color=always -g tests/test_stage7.cpp -o tests/test_stage7b.exe)",
       "Bash(./tests/test_stage7b.exe)",
       "Bash(g++ -fdiagnostics-color=always -g tests/test_stage7.cpp -o tests/test_stage7c.exe)",
-      "Bash(./tests/test_stage7c.exe)"
+      "Bash(./tests/test_stage7c.exe)",
+      "Bash(g++ -fdiagnostics-color=always -g tests/test_stage8.cpp -o tests/test_stage8.exe)",
+      "Bash(./tests/test_stage8.exe)"
     ]
   }
 }

@@ -17,12 +17,20 @@ Claude acts as a **teacher**. The user (Huy) is learning C++ and data structures
 This is a C++ learning project implementing hash table collision resolution strategies from scratch. Each "stage" corresponds to one strategy, implemented as a standalone `HashMap<K, V>` template class with a shared test suite.
 
 **Completed stages:**
-- Stage 1: Chaining with linked list (`stage1_chaining_ll/hash_map.h`)
-- Stage 2: Chaining with dynamic array (`stage2_chaining_dynamic_array/hash_map.h`)
-- Stage 3: Linear probing (`stage3_linear_probing/hash_map.h`)
-- Stage 4: Quadratic probing (`stage4_quadratic_probing/hash_map.h`)
+- Stage 1: Chaining with linked list (`stage1_chaining_ll/`)
+- Stage 2: Chaining with dynamic array (`stage2_chaining_dynamic_array/`)
+- Stage 3: Linear probing (`stage3_linear_probing/`)
+- Stage 4: Quadratic probing (`stage4_quadratic_probing/`)
+- Stage 5: Double hashing (`stage5_double_hashing/`)
+- Stage 6: Robin Hood hashing (`stage6_robinhood_hashing/`)
+- Stage 7: Cuckoo hashing (`stage7_cuckoo_hashing/`)
+- Stage 8: Hopscotch hashing (`stage8_hopscotch_hashing/`)
 
-**Planned stages** (see `README.md`): double hashing, Robin Hood hashing, cuckoo hashing, hopscotch hashing, consistent hashing, Bloom filter, Count-Min sketch.
+Each stage directory contains:
+- `hash_map.h` — the implementation
+- `introduction.md` — deep dive: concept explanation, real-world usage, history, and tradeoffs vs previous stages
+
+**Planned stages** (see `README.md`): consistent hashing, Bloom filter, Count-Min sketch.
 
 ## Known TODOs
 
